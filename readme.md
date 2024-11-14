@@ -46,17 +46,30 @@ This application uses the following technologies:
 
 Install the NuGet Packages:
 
-dotnet add package Microsoft.EntityFrameworkCore
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer  # For SQL Server
-dotnet add package Microsoft.EntityFrameworkCore.Tools    # For migrations and tools
-
+- dotnet add package Microsoft.EntityFrameworkCore
+- dotnet add package Microsoft.EntityFrameworkCore.SqlServer  # For SQL Server
+- dotnet add package Microsoft.EntityFrameworkCore.Tools    # For migrations and tools
 
 
 To create a migration file in Entity Framework Core
 
-dotnet add package Microsoft.EntityFrameworkCore.Tools
-dotnet ef migrations add InitialCreate
-dotnet ef database update
+- dotnet add package Microsoft.EntityFrameworkCore.Tools
+- dotnet ef migrations add InitialCreate
+- dotnet ef database update
+
+
+## Sample Screenshots
+
+![Screenshot 2024-11-15 003625](https://github.com/user-attachments/assets/c2853d17-abbc-4e05-8faf-1d5093d54f35)
+![Screenshot 2024-11-15 003655](https://github.com/user-attachments/assets/bc96f429-b925-4c5f-a42a-76d412cd8e18)
+![Screenshot 2024-11-15 003712](https://github.com/user-attachments/assets/5992e288-eadb-4812-9122-15ac42668215)
+![Screenshot 2024-11-15 003734](https://github.com/user-attachments/assets/508e0938-7a2f-4197-99ef-bfd6bf413917)
+![Screenshot 2024-11-15 003800](https://github.com/user-attachments/assets/49ed6f47-eaab-450f-91f3-b7746543b97a)
+![Screenshot 2024-11-15 003826](https://github.com/user-attachments/assets/b79bf7e5-4558-4fed-8b24-effbac0c42e3)
+![Screenshot 2024-11-15 003900](https://github.com/user-attachments/assets/eda27946-8acd-4d5e-bac1-5439f3442fdd)
+
+
+
 
 
 
