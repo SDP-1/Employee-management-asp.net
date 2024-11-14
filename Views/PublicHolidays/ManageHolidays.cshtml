@@ -1,0 +1,117 @@
+@model IEnumerable<PublicHoliday>
+
+@{
+    ViewData["Title"] = "Manage Public Holidays";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <!-- Form for Adding a New Public Holiday -->
+    <div class="mb-4">
+        <h4>Add New Holiday</h4>
+        <form id="addHolidayForm">
+            <div class="form-group">
+                <label for="holidayDate">Date</label>
+                <input type="date" id="holidayDate" name="Date" class="form-control" required />
+            </div>
+            <div class="form-group mt-2">
+                <label for="holidayDescription">Description</label>
+                <input type="text" id="holidayDescription" name="Description" class="form-control" required />
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Add Holiday</button>
+        </form>
+    </div>
+
+    <!-- Table for Displaying Holidays -->
+    <h4>Existing Holidays</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Description</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="holidaysTable">
+            @foreach (var holiday in Model)
+            {
+                <tr id="holiday-@holiday.Id">
+                    <td>@holiday.Id</td>
+                    <td>@holiday.Date?.ToString("yyyy-MM-dd")</td>
+                    <td>@holiday.Description</td>
+                    <td>
+                        <button class="btn btn-danger deleteBtn" data-id="@holiday.Id">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        // Add new holiday through the form submission
+        document.getElementById('addHolidayForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const date = document.getElementById('holidayDate').value;
+            const description = document.getElementById('holidayDescription').value;
+
+            fetch('/api/PublicHolidays', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    Date: date,
+                    Description: description
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clear form fields
+                document.getElementById('holidayDate').value = '';
+                document.getElementById('holidayDescription').value = '';
+
+                // Add new row to the table
+                const holidaysTable = document.getElementById('holidaysTable');
+                const newRow = holidaysTable.insertRow();
+                newRow.id = `holiday-${data.id}`;
+                newRow.innerHTML = `
+                    <td>${data.id}</td>
+                    <td>${data.date}</td>
+                    <td>${data.description}</td>
+                    <td><button class="btn btn-danger deleteBtn" data-id="${data.id}">Delete</button></td>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        // Delete holiday when the delete button is clicked
+        document.getElementById('holidaysTable').addEventListener('click', function (e) {
+            if (e.target.classList.contains('deleteBtn')) {
+                const holidayId = e.target.getAttribute('data-id');
+                fetch(`/api/PublicHolidays/${holidayId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Remove the holiday row from the table
+                        const row = document.getElementById(`holiday-${holidayId}`);
+                        row.remove();
+                    } else {
+                        alert('Failed to delete the holiday.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the holiday.');
+                });
+            }
+        });
+    </script>
+}
