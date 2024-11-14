@@ -46,16 +46,16 @@ This application uses the following technologies:
 
 Install the NuGet Packages:
 
-dotnet add package Microsoft.EntityFrameworkCore
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer  # For SQL Server
-dotnet add package Microsoft.EntityFrameworkCore.Tools    # For migrations and tools
+- dotnet add package Microsoft.EntityFrameworkCore
+- dotnet add package Microsoft.EntityFrameworkCore.SqlServer  # For SQL Server
+- dotnet add package Microsoft.EntityFrameworkCore.Tools    # For migrations and tools
 
 
 To create a migration file in Entity Framework Core
 
-dotnet add package Microsoft.EntityFrameworkCore.Tools
-dotnet ef migrations add InitialCreate
-dotnet ef database update
+- dotnet add package Microsoft.EntityFrameworkCore.Tools
+- dotnet ef migrations add InitialCreate
+- dotnet ef database update
 
 
 ## Sample Screenshots
