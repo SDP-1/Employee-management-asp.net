@@ -1,0 +1,32 @@
+@{
+    ViewData["Title"] = "Calculate Working Days";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <!-- Form to input dates for calculating working days -->
+    <form asp-controller="PublicHolidays" asp-action="CalculateWorkingDays" method="get">
+        <div class="mb-3">
+            <label for="startDate" class="form-label">Start Date</label>
+            <input type="date" class="form-control" id="startDate" name="startDate" required />
+        </div>
+        <div class="mb-3">
+            <label for="endDate" class="form-label">End Date</label>
+            <input type="date" class="form-control" id="endDate" name="endDate" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Calculate</button>
+    </form>
+
+    <!-- Display the date range and calculated working days if available -->
+    @if (ViewBag.StartDate != null && ViewBag.EndDate != null && ViewBag.WorkingDays != null)
+    {
+        <div class="mt-3 alert alert-info">
+            <strong>Selected Date Range:</strong> From @ViewBag.StartDate to @ViewBag.EndDate
+        </div>
+        
+        <div class="alert alert-info">
+            <strong>Working Days:</strong> @ViewBag.WorkingDays
+        </div>
+    }
+</div>

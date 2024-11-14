@@ -16,13 +16,13 @@ public class PublicHolidaysController : Controller
     public async Task<IActionResult> Manage()
     {
         var holidays = await _publicHolidayService.GetAllPublicHolidaysAsync();
-        return View(holidays); 
+        return View(holidays);
     }
 
     // GET: PublicHolidays/AddHoliday
     public IActionResult AddHoliday()
     {
-        return View();  
+        return View();
     }
 
     // POST: PublicHolidays/AddHoliday
@@ -32,20 +32,20 @@ public class PublicHolidaysController : Controller
         if (ModelState.IsValid)
         {
             await _publicHolidayService.AddPublicHolidayAsync(holiday);
-            return RedirectToAction("Manage");  
+            return RedirectToAction("Manage");
         }
-        return View(holiday); 
+        return View(holiday);
     }
 
     // GET: PublicHolidays/Delete/5
     public async Task<IActionResult> Delete(int id)
     {
-        var holiday = await _publicHolidayService.GetByIdAsync(id); 
+        var holiday = await _publicHolidayService.GetByIdAsync(id);
         if (holiday == null)
         {
-            return NotFound();  
+            return NotFound();
         }
-        return View(holiday);  
+        return View(holiday);
     }
 
     // POST: PublicHolidays/Delete/5
@@ -53,14 +53,20 @@ public class PublicHolidaysController : Controller
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         await _publicHolidayService.DeletePublicHolidayAsync(id);
-        return RedirectToAction("Manage");  
+        return RedirectToAction("Manage");
     }
 
-    // Optional: Calculate working days (if needed)
+    // GET: PublicHolidays/CalculateWorkingDays
     [HttpGet("CalculateWorkingDays")]
-    public ActionResult<int> CalculateWorkingDays(DateTime startDate, DateTime endDate)
+    public IActionResult CalculateWorkingDays(DateTime startDate, DateTime endDate)
     {
         int workingDays = _publicHolidayService.CalculateWorkingDays(startDate, endDate);
-        return Ok(workingDays);
+
+        ViewBag.StartDate = startDate.ToString("yyyy-MM-dd");
+        ViewBag.EndDate = endDate.ToString("yyyy-MM-dd");
+        ViewBag.WorkingDays = workingDays;
+
+        return View();
     }
+
 }
