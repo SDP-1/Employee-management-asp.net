@@ -1,0 +1,26 @@
+@model Employee
+
+@{
+    ViewData["Title"] = "Add New Employee";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label for="Name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="Name" name="Name" required />
+        </div>
+        <div class="mb-3">
+            <label for="Email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="Email" name="Email" required />
+        </div>
+        <div class="mb-3">
+            <label for="JobPosition" class="form-label">Job Position</label>
+            <input type="text" class="form-control" id="JobPosition" name="JobPosition" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="@Url.Action("All", "Employees")" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

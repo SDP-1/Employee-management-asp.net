@@ -1,81 +1,111 @@
 using Microsoft.AspNetCore.Mvc;
+using Employee_management_asp.net.Models;
+using System.Collections.Generic;
 
-[Route("api/[controller]")]
-[ApiController]
-public class EmployeesController : ControllerBase
+namespace Employee_management_asp.net.Controllers
 {
-    private readonly EmployeeService _employeeService;
-
-    public EmployeesController(EmployeeService employeeService)
+    public class EmployeesController : Controller
     {
-        _employeeService = employeeService;
-    }
+        private readonly EmployeeService _employeeService;
 
-    // GET: api/Employees
-    [HttpGet]
-    public ActionResult<IEnumerable<Employee>> GetAllEmployees()
-    {
-        var employees = _employeeService.GetAllEmployees();
-        return Ok(employees);
-    }
-
-    // GET: api/Employees/{id}
-    [HttpGet("{id}")]
-    public ActionResult<Employee> GetEmployeeById(int id)
-    {
-        var employee = _employeeService.GetEmployeeById(id);
-        if (employee == null)
+        // Injecting the EmployeeService into the controller
+        public EmployeesController(EmployeeService employeeService)
         {
-            return NotFound();
-        }
-        return Ok(employee);
-    }
-
-    // POST: api/Employees
-    [HttpPost]
-    public ActionResult<Employee> AddEmployee(Employee employee)
-    {
-        if (employee == null)
-        {
-            return BadRequest("Employee data is required.");
+            _employeeService = employeeService;
         }
 
-        _employeeService.AddEmployee(employee);
-        return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.Id }, employee);
-    }
-
-    // PUT: api/Employees/{id}
-    [HttpPut("{id}")]
-    public IActionResult UpdateEmployee(int id, Employee employee)
-    {
-        if (id != employee.Id)
+        // GET: Employees/All
+        public IActionResult All()
         {
-            return BadRequest("Employee ID mismatch.");
+            var employees = _employeeService.GetAllEmployees();
+            return View(employees);
         }
 
-        var existingEmployee = _employeeService.GetEmployeeById(id);
-        if (existingEmployee == null)
+        // GET: Employees/Details/5
+        public IActionResult Details(int id)
         {
-            return NotFound();
+            var employee = _employeeService.GetEmployeeById(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            return View(employee);
         }
 
-        _employeeService.UpdateEmployee(employee);
-        return Ok(employee);
-    }
-
-    // DELETE: api/Employees/{id}
-    [HttpDelete("{id}")]
-    public IActionResult DeleteEmployee(int id)
-    {
-        var existingEmployee = _employeeService.GetEmployeeById(id);
-        if (existingEmployee == null)
+        // GET: Employees/Create
+        public IActionResult Create()
         {
-            return NotFound();
+            return View();
         }
-        var employeeToDelete = existingEmployee;
 
-        _employeeService.DeleteEmployee(id);
-        return Ok(employeeToDelete);
+        // POST: Employees/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Employee employee)
+        {
+            if (ModelState.IsValid)
+            {
+                _employeeService.AddEmployee(employee);
+                return RedirectToAction(nameof(All));
+            }
+            return View(employee);
+        }
+
+        // GET: Employees/Edit/5
+        public IActionResult Edit(int id)
+        {
+            var employee = _employeeService.GetEmployeeById(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            return View(employee);
+        }
+
+        // POST: Employees/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Employee employee)
+        {
+            if (id != employee.Id)
+            {
+                return BadRequest();
+            }
+
+            if (ModelState.IsValid)
+            {
+                _employeeService.UpdateEmployee(employee);
+                return RedirectToAction(nameof(All));
+            }
+            return View(employee);
+        }
+
+        // GET: Employees/Delete/5
+        public IActionResult Delete(int id)
+        {
+            var employee = _employeeService.GetEmployeeById(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            return View(employee);
+        }
+
+        // POST: Employees/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var employee = _employeeService.GetEmployeeById(id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            _employeeService.DeleteEmployee(id);
+            return RedirectToAction(nameof(All));
+        }
+
     }
-
 }
