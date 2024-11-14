@@ -1,12 +1,10 @@
 public class EmployeeService
 {
     private readonly EmployeeRepository _employeeRepository;
-    private readonly PublicHolidayRepository _holidayRepository;
 
-    public EmployeeService(EmployeeRepository employeeRepository, PublicHolidayRepository holidayRepository)
+    public EmployeeService(EmployeeRepository employeeRepository)
     {
         _employeeRepository = employeeRepository;
-        _holidayRepository = holidayRepository;
     }
 
     // GET All Employees
@@ -23,25 +21,4 @@ public class EmployeeService
 
     // Delete Employee
     public void DeleteEmployee(int id) => _employeeRepository.DeleteEmployee(id);
-
-    // Calculate working days
-    public int CalculateWorkingDays(DateTime startDate, DateTime endDate)
-    {
-        if (startDate.DayOfWeek == DayOfWeek.Saturday || startDate.DayOfWeek == DayOfWeek.Sunday)
-            throw new ArgumentException("Start date must be a weekday.");
-
-        var publicHolidays = _holidayRepository.GetPublicHolidays().Select(h => h.Date).ToHashSet();
-        int workingDays = 0;
-
-        for (var date = startDate; date <= endDate; date = date.AddDays(1))
-        {
-            if (date.DayOfWeek != DayOfWeek.Saturday &&
-                date.DayOfWeek != DayOfWeek.Sunday &&
-                !publicHolidays.Contains(date))
-            {
-                workingDays++;
-            }
-        }
-        return workingDays;
-    }
 }

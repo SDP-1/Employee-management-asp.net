@@ -78,19 +78,4 @@ public class EmployeesController : ControllerBase
         return Ok(employeeToDelete);
     }
 
-
-    // GET: api/Employees/workingdays?startDate={startDate}&endDate={endDate}
-    [HttpGet("workingdays")]
-    public ActionResult<int> CalculateWorkingDays([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
-    {
-        try
-        {
-            int workingDays = _employeeService.CalculateWorkingDays(startDate, endDate);
-            return Ok(workingDays);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 }

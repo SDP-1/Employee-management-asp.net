@@ -9,8 +9,9 @@ Console.WriteLine(builder.Configuration.GetConnectionString("MyDbContext"));
 
 // Register services
 builder.Services.AddScoped<EmployeeRepository>();
-builder.Services.AddScoped<PublicHolidayRepository>();
 builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddScoped<PublicHolidayRepository>();
+builder.Services.AddScoped<PublicHolidayService>();
 
 // Add controllers with views
 builder.Services.AddControllersWithViews();
