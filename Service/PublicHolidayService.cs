@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 public class PublicHolidayService
 {
     private readonly PublicHolidayRepository _publicHolidayRepository;
@@ -16,6 +11,12 @@ public class PublicHolidayService
     public async Task<List<PublicHoliday>> GetAllPublicHolidaysAsync()
     {
         return await _publicHolidayRepository.GetAllPublicHolidaysAsync();
+    }
+
+    // Get a public holiday by Id
+    public async Task<PublicHoliday> GetByIdAsync(int id)
+    {
+        return await _publicHolidayRepository.GetByIdAsync(id);  // Call the repository method
     }
 
     // Add a new public holiday
@@ -39,7 +40,6 @@ public class PublicHolidayService
     // Calculate working days between two dates (excluding weekends and public holidays)
     public int CalculateWorkingDays(DateTime startDate, DateTime endDate)
     {
-        // Adjust the start date to the next Monday if it's a weekend
         if (startDate.DayOfWeek == DayOfWeek.Saturday)
         {
             startDate = startDate.AddDays(2);
@@ -49,11 +49,9 @@ public class PublicHolidayService
             startDate = startDate.AddDays(1);
         }
 
-        // Initialize variables
         int workingDaysCount = 0;
         List<PublicHoliday> publicHolidays = _publicHolidayRepository.GetAllPublicHolidaysAsync().Result;
 
-        // Loop through the dates between the start date and the end date
         for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
         {
             if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday &&

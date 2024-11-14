@@ -27,29 +27,3 @@
         <a href="@Url.Action("All", "Employees")" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
-
-@section Scripts {
-    <script>
-        document.querySelector('form').addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            const formData = new FormData(this);
-
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '@Url.Action("All", "Employees")';
-                    } else {
-                        alert('Failed to delete the employee.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while deleting the employee.');
-                });
-        });
-    </script>
-}

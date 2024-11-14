@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-[Route("api/[controller]")]
-[ApiController]
-public class PublicHolidaysController : ControllerBase
+public class PublicHolidaysController : Controller
 {
     private readonly PublicHolidayService _publicHolidayService;
 
@@ -14,44 +12,51 @@ public class PublicHolidaysController : ControllerBase
         _publicHolidayService = publicHolidayService;
     }
 
-    // Get all public holidays
-    [HttpGet]
-    public async Task<ActionResult<List<PublicHoliday>>> GetAllPublicHolidays()
+    // GET: PublicHolidays/Manage
+    public async Task<IActionResult> Manage()
     {
-        var publicHolidays = await _publicHolidayService.GetAllPublicHolidaysAsync();
-        return Ok(publicHolidays);
+        var holidays = await _publicHolidayService.GetAllPublicHolidaysAsync();
+        return View(holidays); 
     }
 
-    // Add a new public holiday
+    // GET: PublicHolidays/AddHoliday
+    public IActionResult AddHoliday()
+    {
+        return View();  
+    }
+
+    // POST: PublicHolidays/AddHoliday
     [HttpPost]
-    public async Task<ActionResult> AddPublicHoliday(PublicHoliday publicHoliday)
+    public async Task<IActionResult> AddHoliday(PublicHoliday holiday)
     {
-        await _publicHolidayService.AddPublicHolidayAsync(publicHoliday);
-        return CreatedAtAction(nameof(GetAllPublicHolidays), new { id = publicHoliday.Id }, publicHoliday);
-    }
-
-    // Update an existing public holiday
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdatePublicHoliday(int id, PublicHoliday publicHoliday)
-    {
-        if (id != publicHoliday.Id)
+        if (ModelState.IsValid)
         {
-            return BadRequest("Holiday ID mismatch");
+            await _publicHolidayService.AddPublicHolidayAsync(holiday);
+            return RedirectToAction("Manage");  
         }
-
-        await _publicHolidayService.UpdatePublicHolidayAsync(publicHoliday);
-        return NoContent();
+        return View(holiday); 
     }
 
-    // Delete a public holiday
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeletePublicHoliday(int id)
+    // GET: PublicHolidays/Delete/5
+    public async Task<IActionResult> Delete(int id)
+    {
+        var holiday = await _publicHolidayService.GetByIdAsync(id); 
+        if (holiday == null)
+        {
+            return NotFound();  
+        }
+        return View(holiday);  
+    }
+
+    // POST: PublicHolidays/Delete/5
+    [HttpPost, ActionName("Delete")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
         await _publicHolidayService.DeletePublicHolidayAsync(id);
-        return NoContent();
+        return RedirectToAction("Manage");  
     }
 
-    // Calculate the number of working days between two dates
+    // Optional: Calculate working days (if needed)
     [HttpGet("CalculateWorkingDays")]
     public ActionResult<int> CalculateWorkingDays(DateTime startDate, DateTime endDate)
     {

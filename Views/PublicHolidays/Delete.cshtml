@@ -1,0 +1,25 @@
+@model PublicHoliday
+
+@{
+    ViewData["Title"] = "Delete Holiday";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <p>Are you sure you want to delete the following holiday?</p>
+
+    <dl class="row">
+        <dt class="col-sm-3">Date</dt>
+        <dd class="col-sm-9">@Model.Date?.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-3">Description</dt>
+        <dd class="col-sm-9">@Model.Description</dd>
+    </dl>
+
+    <!-- Delete Form (No DeleteConfirmed action) -->
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="@Url.Action("Manage", "PublicHolidays")" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

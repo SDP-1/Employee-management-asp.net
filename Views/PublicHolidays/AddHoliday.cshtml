@@ -1,0 +1,22 @@
+@model PublicHoliday
+
+@{
+    ViewData["Title"] = "Add New Holiday";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="AddHoliday" method="post">
+        <div class="form-group">
+            <label for="Date">Holiday Date</label>
+            <input type="date" id="Date" name="Date" class="form-control" required />
+        </div>
+        <div class="form-group mt-2">
+            <label for="Description">Holiday Description</label>
+            <input type="text" id="Description" name="Description" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Add Holiday</button>
+        <a href="@Url.Action("Manage", "PublicHolidays")" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+</div>
