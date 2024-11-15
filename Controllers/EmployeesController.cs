@@ -1,23 +1,41 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Employee_management_asp.net.Models;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Employee_management_asp.net.Controllers
 {
     public class EmployeesController : Controller
     {
         private readonly EmployeeService _employeeService;
+        private readonly IMemoryCache _cache;
 
-        // Injecting the EmployeeService into the controller
-        public EmployeesController(EmployeeService employeeService)
+        public EmployeesController(EmployeeService employeeService, IMemoryCache cache)
         {
             _employeeService = employeeService;
+            _cache = cache;
         }
 
         // GET: Employees/All
         public IActionResult All()
         {
-            var employees = _employeeService.GetAllEmployees();
+            const string cacheKey = "EmployeeList";
+
+            // Attempt to retrieve data from cache
+            if (!_cache.TryGetValue(cacheKey, out List<Employee> employees))
+            {
+                // Data not in cache, retrieve from service
+                employees = (List<Employee>?)_employeeService.GetAllEmployees();
+
+                // Set cache options and cache the data
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(5)); // Cache for 5 minutes
+
+                _cache.Set(cacheKey, employees, cacheEntryOptions);
+            }
+
             return View(employees);
         }
 
@@ -46,6 +64,10 @@ namespace Employee_management_asp.net.Controllers
             if (ModelState.IsValid)
             {
                 _employeeService.AddEmployee(employee);
+
+                // Clear the employee list cache after adding a new employee
+                _cache.Remove("EmployeeList");
+
                 return RedirectToAction(nameof(All));
             }
             return View(employee);
@@ -75,6 +97,10 @@ namespace Employee_management_asp.net.Controllers
             if (ModelState.IsValid)
             {
                 _employeeService.UpdateEmployee(employee);
+
+                // Clear the employee list cache after editing an employee
+                _cache.Remove("EmployeeList");
+
                 return RedirectToAction(nameof(All));
             }
             return View(employee);
@@ -104,8 +130,11 @@ namespace Employee_management_asp.net.Controllers
             }
 
             _employeeService.DeleteEmployee(id);
+
+            // Clear the employee list cache after deleting an employee
+            _cache.Remove("EmployeeList");
+
             return RedirectToAction(nameof(All));
         }
-
     }
 }

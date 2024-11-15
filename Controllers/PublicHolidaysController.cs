@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -6,16 +7,33 @@ using System.Threading.Tasks;
 public class PublicHolidaysController : Controller
 {
     private readonly PublicHolidayService _publicHolidayService;
+    private readonly IMemoryCache _cache;
 
-    public PublicHolidaysController(PublicHolidayService publicHolidayService)
+    public PublicHolidaysController(PublicHolidayService publicHolidayService, IMemoryCache cache)
     {
         _publicHolidayService = publicHolidayService;
+        _cache = cache;
     }
 
     // GET: PublicHolidays/Manage
     public async Task<IActionResult> Manage()
     {
-        var holidays = await _publicHolidayService.GetAllPublicHolidaysAsync();
+        const string cacheKey = "PublicHolidaysList";
+
+        // Try to get data from the cache
+        if (!_cache.TryGetValue(cacheKey, out List<PublicHoliday> holidays))
+        {
+            // If the data is not in cache, get it from the service
+            holidays = await _publicHolidayService.GetAllPublicHolidaysAsync();
+
+            // Set cache options: 5-minute expiration
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5));
+
+            // Store data in cache
+            _cache.Set(cacheKey, holidays, cacheEntryOptions);
+        }
+
         return View(holidays);
     }
 
@@ -32,6 +50,10 @@ public class PublicHolidaysController : Controller
         if (ModelState.IsValid)
         {
             await _publicHolidayService.AddPublicHolidayAsync(holiday);
+
+            // Clear cache after adding a new holiday to ensure fresh data
+            _cache.Remove("PublicHolidaysList");
+
             return RedirectToAction("Manage");
         }
         return View(holiday);
@@ -53,6 +75,10 @@ public class PublicHolidaysController : Controller
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         await _publicHolidayService.DeletePublicHolidayAsync(id);
+
+        // Clear cache after deleting a holiday
+        _cache.Remove("PublicHolidaysList");
+
         return RedirectToAction("Manage");
     }
 
@@ -60,7 +86,19 @@ public class PublicHolidaysController : Controller
     [HttpGet("CalculateWorkingDays")]
     public IActionResult CalculateWorkingDays(DateTime startDate, DateTime endDate)
     {
-        int workingDays = _publicHolidayService.CalculateWorkingDays(startDate, endDate);
+        string cacheKey = $"WorkingDays_{startDate:yyyyMMdd}_{endDate:yyyyMMdd}";
+
+        if (!_cache.TryGetValue(cacheKey, out int workingDays))
+        {
+            // Calculate working days if not cached
+            workingDays = _publicHolidayService.CalculateWorkingDays(startDate, endDate);
+
+            // Set cache options with a 1-hour expiration for the calculated days
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromHours(1));
+
+            _cache.Set(cacheKey, workingDays, cacheEntryOptions);
+        }
 
         ViewBag.StartDate = startDate.ToString("yyyy-MM-dd");
         ViewBag.EndDate = endDate.ToString("yyyy-MM-dd");
@@ -68,5 +106,4 @@ public class PublicHolidaysController : Controller
 
         return View();
     }
-
 }
