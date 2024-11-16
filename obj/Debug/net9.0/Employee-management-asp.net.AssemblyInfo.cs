@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Employee-management-asp.net")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9eeefb766ba38bacf8230e1df04e5e4efcd0b37a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+04d50ba52fd696cae13080efb67fdd880f5fb900")]
 [assembly: System.Reflection.AssemblyProductAttribute("Employee-management-asp.net")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Employee-management-asp.net")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
